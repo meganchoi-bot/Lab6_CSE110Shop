@@ -1,5 +1,4 @@
 // product-item.js
-
 class ProductItem extends HTMLElement {
   constructor() {
     // call super first
@@ -97,6 +96,50 @@ class ProductItem extends HTMLElement {
     this.shadow.querySelector(".price").innerHTML = money.concat(newVal);
   }
 
+  set theButton(func) {
+    this.shadow.querySelector('button').onclick = func;
+  }
+
+  set theID(newVal) {
+    this.shadow.querySelector('li').setAttribute('id', newVal);
+  }
 }
 
 customElements.define('product-item', ProductItem);
+
+function updateCart() {
+
+  // remove item
+  if (this.innerHTML == 'Remove from Cart') {
+    var count = parseInt(document.getElementById('cart-count').innerHTML);
+    count = count - 1;
+    document.getElementById('cart-count').innerHTML = count.toString();
+    this.innerHTML = 'Add to Cart';
+
+    var storedList = JSON.parse(localStorage.getItem('cartList'));
+    const ind = storedList.indexOf(this.parentElement.id);
+    if (ind >= 0) {
+      storedList.splice(ind, 1);
+      localStorage.setItem('cartList', JSON.stringify(storedList));
+    }
+    
+  } 
+  // add item
+  else if (this.innerHTML == 'Add to Cart') {
+    var count = parseInt(document.getElementById('cart-count').innerHTML);
+    count = count + 1;
+    document.getElementById('cart-count').innerHTML = count.toString();
+    this.innerHTML = 'Remove from Cart';
+
+    // store added cart items
+    var storedList = JSON.parse(localStorage.getItem('cartList'));
+    var exists = storedList.indexOf(this.parentElement.id);
+    if (exists < 0) {
+      storedList.push(this.parentElement.id);
+      // update array in localStorage
+      localStorage.setItem('cartList', JSON.stringify(storedList));
+    }
+  }
+
+  
+}
